@@ -8,5 +8,5 @@ class TestUrls(SimpleTestCase):
         self.assertEquals(resolve(url).func.view_class, HomeView)
 
     def test_about(self):
-        url = reverse('home:about')
+        url = reverse('home:about', args=('mahdi',))
         self.assertEquals(resolve(url).func.view_class, AboutView)

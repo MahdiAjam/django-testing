@@ -9,7 +9,6 @@ class UserRegistrationForm(forms.Form):
     password = forms.CharField(label='password', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     password2 = forms.CharField(label='confirm password', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
-
     def clean_email(self):
         email = self.cleaned_data['email']
         user = User.objects.filter(email=email).exists()
@@ -19,7 +18,7 @@ class UserRegistrationForm(forms.Form):
 
     def clean(self):
         cd = super().clean()
-        p1 = cd.get('password1')
+        p1 = cd.get('password')
         p2 = cd.get('password2')
 
         if p1 and p2 and p1 != p2:
