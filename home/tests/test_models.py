@@ -8,3 +8,4 @@ class TestWriterModel(TestCase):
 
     def test_model_str(self):
         self.assertEquals(str(self.writer), 'kevin brown')
+
