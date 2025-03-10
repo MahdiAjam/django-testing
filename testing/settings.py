@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # my apps
     'home.apps.HomeConfig',
     'tracking.apps.TrackingConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
