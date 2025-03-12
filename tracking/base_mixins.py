@@ -9,6 +9,7 @@ class BaseLoggingMixin:
 
     def finalize_response(self, request, response, *args, **kwargs):  # it works after calling the view
         response = super().finalize_response(request, response, *args, **kwargs)
+        user = self._get_user(request)
         self.log.update({
             'remote_address': self._get_ip_address(request),
             'view': self._get_view_name(request),
@@ -16,8 +17,10 @@ class BaseLoggingMixin:
             'path': self._get_path(request),
             'host': request.get_host(),
             'method': request.method,
-
-
+            'user': user,
+            'username_persistent': user.get_username() if user else 'Anonymous',
+            'response_ms': self._get_response_ms(),
+            'status_code': response.status_code,
         })
         self.handle_log()
         return response
@@ -58,6 +61,16 @@ class BaseLoggingMixin:
     def _get_path(self, request):
         return request.path[:app_settings.PATH_LENGTH]
 
+    def _get_user(self, request):
+        user = request.user
+        if user.is_anonymous:
+            return None
+        return user
+
+    def _get_response_ms(self):
+        response_timedelta = now() - self.log['request_at']
+        response_ms = int(response_timedelta.total_seconds() * 1000)
+        return max(response_ms, 0)
 
 """
 REMOTE_ADDR --> proxy ==> ip proxy
