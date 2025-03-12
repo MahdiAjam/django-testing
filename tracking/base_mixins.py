@@ -1,11 +1,18 @@
 from django.utils.timezone import now
 import ipaddress
 from .app_settings import app_settings
+import traceback
+
 
 class BaseLoggingMixin:
     def initial(self, request, *args, **kwargs):  # it works before calling the view
         self.log = {'request_at': now()}
         return super().initial(request, *args, **kwargs)
+
+    def handle_exception(self, exc):
+        response = super().handle_exception(exc)
+        self.log['errors'] = traceback.format_exc()
+        return response
 
     def finalize_response(self, request, response, *args, **kwargs):  # it works after calling the view
         response = super().finalize_response(request, response, *args, **kwargs)
@@ -71,6 +78,7 @@ class BaseLoggingMixin:
         response_timedelta = now() - self.log['request_at']
         response_ms = int(response_timedelta.total_seconds() * 1000)
         return max(response_ms, 0)
+
 
 """
 REMOTE_ADDR --> proxy ==> ip proxy
