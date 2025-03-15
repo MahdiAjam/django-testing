@@ -3,12 +3,15 @@ import ipaddress
 from .app_settings import app_settings
 import traceback
 import logging
+import ast
 
 logger = logging.getLogger(__name__)
 
 
 class BaseLoggingMixin:
     logging_methods = '__all__'
+    sensitive_fields = {}
+    CLEANED_SUBSTITUTE = '*******'
 
     def initial(self, request, *args, **kwargs):  # it works before calling the view
         self.log = {'request_at': now()}
@@ -34,6 +37,7 @@ class BaseLoggingMixin:
                 'username_persistent': user.get_username() if user else 'Anonymous',
                 'response_ms': self._get_response_ms(),
                 'status_code': response.status_code,
+                'query_params': self._clean_data(request.query_params.dict())
             })
 
             try:
@@ -94,6 +98,26 @@ class BaseLoggingMixin:
         return (
                 self.logging_methods == '__all__' or request.method in self.logging_methods
         )
+
+    def _clean_data(self, data):
+        if isinstance(data, dict):
+            SENSITIVE_FIELDS = {'api', 'token', 'key', 'secret', 'password', 'signature'}
+
+            if self.sensitive_fields:
+                SENSITIVE_FIELDS = SENSITIVE_FIELDS | {field.lower() for field in self.sensitive_fields}
+
+                for key, value in data.items():
+                    try:
+                        value = ast.literal_eval(value)
+                    except (ValueError, SyntaxError):
+                        pass
+
+                    if isinstance(value, (list, dict)):
+                        data[key] = self._clean_data(value)
+
+                    if key.lower() in SENSITIVE_FIELDS:
+                        data[key] = self.CLEANED_SUBSTITUTE
+        return data
 
 
 """
