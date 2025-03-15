@@ -2,6 +2,9 @@ from django.utils.timezone import now
 import ipaddress
 from .app_settings import app_settings
 import traceback
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class BaseLoggingMixin:
@@ -32,7 +35,12 @@ class BaseLoggingMixin:
                 'response_ms': self._get_response_ms(),
                 'status_code': response.status_code,
             })
-            self.handle_log()
+
+            try:
+                self.handle_log()
+            except Exception:
+                logger.exception('logging API call raised exception!!')
+
         return response
 
     def handle_log(self):
