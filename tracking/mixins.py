@@ -3,5 +3,5 @@ from .models import APIRequestLog
 
 class LoggingMixins(BaseLoggingMixin):
     def handle_log(self):
-        # APIRequestLog(**self.log).save()
-        print(self.log)
+        APIRequestLog(**self.log).save()
+
