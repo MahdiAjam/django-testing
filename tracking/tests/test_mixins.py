@@ -75,7 +75,17 @@ class TestLoggingMixin(APITestCase):
         log = APIRequestLog.objects.first()
         self.assertEqual(log.remote_address, '127.0.0.8')
 
+    def test_log_host(self):
+        self.client.get('/logging/')
+        log = APIRequestLog.objects.first()
+        self.assertEqual(log.host, 'testserver')
 
+    def test_log_method(self):
+        self.client.get('/logging/')
+        log = APIRequestLog.objects.first()
+        self.assertEqual(log.method, 'GET')
 
-
-
+    def test_log_status(self):
+        self.client.get('/logging/')
+        log = APIRequestLog.objects.first()
+        self.assertEqual(log.status_code, 200)
