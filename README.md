@@ -1,6 +1,7 @@
 # drf-api-tracking
 
 `drf-api-tracking` is a Django and DRF package that logs Django Rest Framework requests to the database. This package provides a Django model and a DRF view mixin that work together to track request/response details for improved monitoring and debugging.
+this project is based on drf-api-tracking (you can found it https://github.com/lingster/drf-api-tracking).
 
 ## Features
 - Logs detailed information about each request and response cycle.
